@@ -1,28 +1,35 @@
 # Um bloco por projeto. Preencha os links reais (ou mande para o Claude preencher).
 # caminho_local é relativo à pasta design-ops. Cada caminho_local também precisa
 # estar em .claude/settings.json > additionalDirectories.
+#
+# Valores marcados com PREENCHER ainda não foram encontrados no repositório nem no Jira.
 
 projetos:
-  projeto-a:
-    nome: "Nome do projeto"
+  azo-web:
+    nome: "Azo Telemedicina - Web"
     branch_base: "main"
     repos:
-      - url: "https://github.com/ORG/REPO.git"
-        caminho_local: "../repos/REPO"
-        papel: "produto + storybook"      # se o Storybook for outro repo, adicione outro item
+      - url: "https://github.com/edgebr/AZO-Telemedicina-Web.git"
+        caminho_local: "../azo-telemedicina-web"
+        papel: "produto + storybook"   # monorepo pnpm/turbo: apps/web, packages/ui, docs/storybook
     storybook:
-      comando: "npm run storybook"
+      pasta: "docs/storybook"          # dentro do repositório acima
+      instalar: "pnpm install"         # rodar na raiz do repositório
+      comando: "pnpm --filter @docs/storybook storybook"
       url_local: "http://localhost:6006"
-      pasta_stories: "src/**/*.stories.tsx"
-    chromatic_url: "https://www.chromatic.com/library?appId=XXXX"
+      pasta_stories: "docs/storybook/src/**/*.stories.@(js|jsx|ts|tsx)"
+      pasta_componentes: "packages/ui/src"
+    chromatic_url: "PREENCHER"         # o repositório ainda não tem Chromatic configurado (sem appId nem workflow)
     figma:
-      arquivo_trabalho: "https://www.figma.com/design/XXXX/Projeto"   # onde os agentes criam páginas por tarefa
-      biblioteca: "https://www.figma.com/design/YYYY/Design-System"   # componentes vinculados ao Storybook
+      arquivo_trabalho: "PREENCHER"    # ex.: https://www.figma.com/design/XXXX/Azo-Benefícios-Gestão-master
+      biblioteca: "PREENCHER"          # arquivo do Design System vinculado ao Storybook
     jira:
-      site: "https://SUA-ORG.atlassian.net"
-      projeto: "CHAVE"
-      board: "https://SUA-ORG.atlassian.net/jira/software/projects/CHAVE/boards/1"
-      status_qa: "QA"            # nome exato do status para onde a task vai no fim
-      label_duvida_qa: "duvida-design"
+      site: "https://edgebr.atlassian.net"
+      cloud_id: "97f6dd8d-eaf8-4654-a786-9755c18ced2d"
+      projeto: "AZOT"                  # Azo - Telemedicina
+      board: "https://edgebr.atlassian.net/jira/software/c/projects/AZOT/boards"
+      status_qa: "To Review"           # o AZOT não tem status "QA"; confirme se é este
+      label_duvida_qa: "duvida-design" # label ainda não existe no AZOT; crie ao marcar a 1ª dúvida
+      label_web: "WEB"
     prototipo:
-      modo: "codigo"             # "codigo" (worktree + Storybook) ou "figma"
+      modo: "codigo"                   # "codigo" (worktree + Storybook) ou "figma"

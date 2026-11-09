@@ -67,3 +67,23 @@ justificativa: `python scripts\estado.py pular <CHAVE> "motivo"`.
 - Painel diz "Sem conexão": a janela minimizada do painel foi fechada; rode `iniciar.bat` de novo.
 - Escrever no Figma falha: é permissão do assento (precisa de Full); o agente para e avisa.
 - Linux/macOS: troque `python` por `python3` nas skills e no settings.json.
+
+## Rodando no Claude Code na nuvem (claude.ai/code) ou Linux
+
+O projeto **azo-web** em `projetos.yaml` aponta para `edgebr/AZO-Telemedicina-Web`,
+clonado em `../azo-telemedicina-web` (ao lado desta pasta).
+
+```bash
+bash setup.sh --storybook
+```
+
+Confere os programas, clona o repositório, testa o `estado.py`, roda `pnpm install`
+e sobe o Storybook (`docs/storybook`) em http://localhost:6006.
+Painel: `python3 scripts/dashboard.py --sem-navegador` → http://localhost:8787.
+
+Na nuvem, Jira (Atlassian) e Figma vêm dos conectores da conta do claude.ai, não do
+`.mcp.json`. O contêiner é temporário: tarefas em `tarefas/` só persistem se forem commitadas.
+
+Pendências em `projetos.yaml` (marcadas `PREENCHER`): link do Chromatic (o repositório
+ainda não tem Chromatic configurado), arquivo de trabalho e biblioteca do Figma.
+Confirme também `jira.status_qa` (o AZOT não tem status "QA"; está como "To Review").

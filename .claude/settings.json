@@ -1,6 +1,6 @@
 {
   "permissions": {
-    "additionalDirectories": ["../repos/REPO"],
+    "additionalDirectories": ["../azo-telemedicina-web"],
     "allow": [
       "Read",
       "Grep",
