@@ -7,22 +7,29 @@
 projetos:
   azo-web:
     nome: "Azo Telemedicina - Web"
-    branch_base: "main"
+    branch_base: "dev"                 # a main está desatualizada; Storybook e protótipos partem da dev
     repos:
       - url: "https://github.com/edgebr/AZO-Telemedicina-Web.git"
+        branch: "dev"
         caminho_local: "../azo-telemedicina-web"
-        papel: "produto + storybook"   # monorepo pnpm/turbo: apps/web, packages/ui, docs/storybook
+        papel: "produto + storybook"   # app Vite + React (npm); Storybook 10 na raiz
+      - url: "https://github.com/edgebr/AZO-Telemedicina-API.git"
+        branch: "dev"
+        caminho_local: "../azo-telemedicina-api"
+        papel: "openapi"               # só o openapi.yaml (gera o cliente src/api/generated via orval)
+        sparse: "/openapi.yaml"
     storybook:
-      pasta: "docs/storybook"          # dentro do repositório acima
-      instalar: "pnpm install"         # rodar na raiz do repositório
-      comando: "pnpm --filter @docs/storybook storybook"
+      instalar: "npm ci && npx orval --config ./orval.config.ts"   # na raiz do repositório web; precisa do .env
+      env: "cp .env.example .env e OPENAPI_FILE_PATH=../azo-telemedicina-api/openapi.yaml"
+      comando: "npm run storybook"
       url_local: "http://localhost:6006"
-      pasta_stories: "docs/storybook/src/**/*.stories.@(js|jsx|ts|tsx)"
-      pasta_componentes: "packages/ui/src"
-    chromatic_url: "PREENCHER"         # o repositório ainda não tem Chromatic configurado (sem appId nem workflow)
+      pasta_stories: "src/**/*.stories.@(ts|tsx)"   # maioria em src/stories/ (~100 arquivos, 520 entradas)
+      pasta_componentes: "src/components"           # primitivos em src/components/ui
+      helper_figma: "src/stories/figma.ts"          # gestaoMasterDesign(nodeId) liga a story ao frame do Figma
+    chromatic_url: "PREENCHER"         # o Storybook usa o addon @chromatic-com/storybook, mas não há appId nem workflow no repo
     figma:
-      arquivo_trabalho: "PREENCHER"    # ex.: https://www.figma.com/design/XXXX/Azo-Benefícios-Gestão-master
-      biblioteca: "PREENCHER"          # arquivo do Design System vinculado ao Storybook
+      arquivo_trabalho: "https://www.figma.com/design/6qEOF9vHotXUIcTMww83EE/Azo-Benef%C3%ADcios---Gest%C3%A3o-master"
+      biblioteca: "PREENCHER"          # arquivo do Design System, se for separado do Gestão master
     jira:
       site: "https://edgebr.atlassian.net"
       cloud_id: "97f6dd8d-eaf8-4654-a786-9755c18ced2d"

@@ -70,20 +70,22 @@ justificativa: `python scripts\estado.py pular <CHAVE> "motivo"`.
 
 ## Rodando no Claude Code na nuvem (claude.ai/code) ou Linux
 
-O projeto **azo-web** em `projetos.yaml` aponta para `edgebr/AZO-Telemedicina-Web`,
-clonado em `../azo-telemedicina-web` (ao lado desta pasta).
+O projeto **azo-web** em `projetos.yaml` usa a branch **dev** de `edgebr/AZO-Telemedicina-Web`
+(a `main` está desatualizada), clonada em `../azo-telemedicina-web`. O cliente da API
+(`src/api/generated`) não é versionado: ele é gerado com o orval a partir do `openapi.yaml` da
+branch dev de `edgebr/AZO-Telemedicina-API` (clone parcial em `../azo-telemedicina-api`).
 
 ```bash
 bash setup.sh --storybook
 ```
 
-Confere os programas, clona o repositório, testa o `estado.py`, roda `pnpm install`
-e sobe o Storybook (`docs/storybook`) em http://localhost:6006.
+Confere os programas, clona os dois repositórios na dev, cria o `.env`, roda `npm ci`, gera o
+cliente da API e sobe o Storybook em http://localhost:6006.
 Painel: `python3 scripts/dashboard.py --sem-navegador` → http://localhost:8787.
 
 Na nuvem, Jira (Atlassian) e Figma vêm dos conectores da conta do claude.ai, não do
 `.mcp.json`. O contêiner é temporário: tarefas em `tarefas/` só persistem se forem commitadas.
 
-Pendências em `projetos.yaml` (marcadas `PREENCHER`): link do Chromatic (o repositório
-ainda não tem Chromatic configurado), arquivo de trabalho e biblioteca do Figma.
-Confirme também `jira.status_qa` (o AZOT não tem status "QA"; está como "To Review").
+Pendências em `projetos.yaml` (marcadas `PREENCHER`): link do Chromatic (o Storybook tem o
+addon, mas o repositório não tem appId nem workflow) e a biblioteca do Figma, se for separada
+do Gestão master. Confirme também `jira.status_qa` (o AZOT não tem status "QA"; está como "To Review").

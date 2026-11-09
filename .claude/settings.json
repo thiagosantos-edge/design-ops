@@ -1,6 +1,6 @@
 {
   "permissions": {
-    "additionalDirectories": ["../azo-telemedicina-web"],
+    "additionalDirectories": ["../azo-telemedicina-web", "../azo-telemedicina-api"],
     "allow": [
       "Read",
       "Grep",

@@ -1,42 +1,50 @@
 #!/usr/bin/env bash
 # Configuração do design-ops em Linux/macOS ou numa sessão do Claude Code na nuvem.
 # Uso, dentro da pasta design-ops:  bash setup.sh [--storybook]
-#   --storybook  também instala as dependências (pnpm) e sobe o Storybook em segundo plano.
+#   --storybook  também instala as dependências, gera o cliente da API e sobe o Storybook.
 set -u
 cd "$(dirname "$0")"
 falhou=0
 ok()    { printf '   OK  %s\n' "$1"; }
 falta() { printf '   FALTA  %s\n' "$1"; falhou=1; }
 
-echo "== Verificando programas"
-for p in git python3 node; do command -v "$p" >/dev/null && ok "$p" || falta "$p"; done
-command -v pnpm >/dev/null || { echo "   Instalando pnpm..."; npm install -g pnpm@9 >/dev/null 2>&1; }
-command -v pnpm >/dev/null && ok "pnpm" || falta "pnpm (npm install -g pnpm@9)"
+WEB="../azo-telemedicina-web"
+API="../azo-telemedicina-api"
+BRANCH="dev"
 
-echo "== Clonando os repositórios listados em projetos.yaml"
-url=""
-while IFS= read -r linha; do
-  if [[ $linha =~ ^[[:space:]]*-[[:space:]]*url:[[:space:]]*\"([^\"]+)\" ]]; then url="${BASH_REMATCH[1]}"; continue; fi
-  if [[ -n $url && $linha =~ ^[[:space:]]*caminho_local:[[:space:]]*\"([^\"]+)\" ]]; then
-    destino="${BASH_REMATCH[1]}"
-    if [[ $url == *ORG/REPO* ]]; then falta "projetos.yaml ainda tem o link de exemplo"
-    elif git -C "$destino" rev-parse HEAD >/dev/null 2>&1; then ok "Já existe: $destino"
-    elif git clone --depth 1 "$url" "$destino"; then ok "Clonado: $destino"
-    else falta "Não consegui clonar $url (confira o acesso ao repositório)"; fi
-    url=""
+echo "== Verificando programas"
+for p in git python3 node npm; do command -v "$p" >/dev/null && ok "$p" || falta "$p"; done
+
+echo "== Repositório web ($BRANCH)"
+if ! git -C "$WEB" rev-parse HEAD >/dev/null 2>&1; then
+  git clone --depth 1 --branch "$BRANCH" https://github.com/edgebr/AZO-Telemedicina-Web.git "$WEB" || falta "clonar AZO-Telemedicina-Web"
+fi
+if git -C "$WEB" rev-parse HEAD >/dev/null 2>&1; then
+  if [[ $(git -C "$WEB" branch --show-current) != "$BRANCH" ]]; then
+    git -C "$WEB" fetch --depth 1 origin "$BRANCH:refs/remotes/origin/$BRANCH" && git -C "$WEB" checkout -B "$BRANCH" "origin/$BRANCH"
   fi
-done < projetos.yaml
+  ok "$WEB na branch $(git -C "$WEB" branch --show-current) ($(git -C "$WEB" rev-parse --short HEAD))"
+fi
+
+echo "== openapi.yaml da API ($BRANCH)"
+if ! [[ -f $API/openapi.yaml ]]; then
+  git clone --depth 1 --branch "$BRANCH" --filter=blob:none --sparse https://github.com/edgebr/AZO-Telemedicina-API.git "$API" \
+    && git -C "$API" sparse-checkout set --no-cone /openapi.yaml
+fi
+[[ -f $API/openapi.yaml ]] && ok "$API/openapi.yaml" || falta "openapi.yaml (precisa de leitura em edgebr/AZO-Telemedicina-API)"
 
 echo "== Testando a máquina de estados"
 python3 scripts/estado.py painel >/dev/null && ok "estado.py funcionando" || falta "estado.py falhou"
 
 if [[ ${1:-} == "--storybook" ]]; then
-  repo="../azo-telemedicina-web"
-  echo "== Instalando dependências do $repo (pnpm install)"
-  (cd "$repo" && pnpm install --frozen-lockfile >/tmp/pnpm-install.log 2>&1) && ok "pnpm install" || falta "pnpm install (veja /tmp/pnpm-install.log)"
-  echo "== Subindo o Storybook em http://localhost:6006"
-  (cd "$repo" && setsid nohup pnpm --filter @docs/storybook storybook --ci </dev/null >/tmp/storybook.log 2>&1 &)
-  ok "Storybook iniciando (log em /tmp/storybook.log)"
+  echo "== Preparando o Storybook"
+  if [[ ! -f $WEB/.env ]]; then
+    sed "s#^OPENAPI_FILE_PATH=.*#OPENAPI_FILE_PATH=$(cd "$API" 2>/dev/null && pwd)/openapi.yaml#" "$WEB/.env.example" > "$WEB/.env"
+  fi
+  (cd "$WEB" && npm ci --ignore-scripts --no-audit --no-fund >/tmp/npm-install.log 2>&1) && ok "npm ci" || falta "npm ci (veja /tmp/npm-install.log)"
+  (cd "$WEB" && npx orval --config ./orval.config.ts >/tmp/orval.log 2>&1) && ok "cliente da API gerado" || falta "orval (veja /tmp/orval.log)"
+  (cd "$WEB" && setsid nohup npm run storybook -- --ci --no-open </dev/null >/tmp/storybook.log 2>&1 &)
+  ok "Storybook iniciando em http://localhost:6006 (log em /tmp/storybook.log)"
 fi
 
 if [[ $falhou == 1 ]]; then echo; echo "Resolva os itens FALTA acima e rode de novo."; exit 1; fi
