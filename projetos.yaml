@@ -63,7 +63,7 @@ projetos:
       cloud_id: "97f6dd8d-eaf8-4654-a786-9755c18ced2d"
       projeto: "AZOT"                  # Azo - Telemedicina
       board: "https://edgebr.atlassian.net/jira/software/c/projects/AZOT/boards"
-      status_qa: "To Review"           # o AZOT não tem status "QA"; confirme se é este
+      status_qa: "Quality Assurance"   # status para onde a task vai depois do design
       label_duvida_qa: "duvida-design" # label ainda não existe no AZOT; crie ao marcar a 1ª dúvida
       label_web: "WEB"
     prototipo:

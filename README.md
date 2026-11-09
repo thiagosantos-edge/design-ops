@@ -93,4 +93,4 @@ criam seções `<CHAVE> · <etapa>` nas páginas existentes do arquivo dela.
 Chromatic: `chromatic.storybook_publicado` aponta para o Storybook da dev. Numa sessão na nuvem,
 chromatic.com precisa estar em Allowed domains do ambiente; senão use o Storybook local.
 
-Pendência: confirme `jira.status_qa` (o AZOT não tem status "QA"; está como "To Review").
+Jira: projeto AZOT; depois do design a task vai para o status "Quality Assurance".
