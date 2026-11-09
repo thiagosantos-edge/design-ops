@@ -86,6 +86,11 @@ Painel: `python3 scripts/dashboard.py --sem-navegador` → http://localhost:8787
 Na nuvem, Jira (Atlassian) e Figma vêm dos conectores da conta do claude.ai, não do
 `.mcp.json`. O contêiner é temporário: tarefas em `tarefas/` só persistem se forem commitadas.
 
-Pendências em `projetos.yaml` (marcadas `PREENCHER`): link do Chromatic (o Storybook tem o
-addon, mas o repositório não tem appId nem workflow) e a biblioteca do Figma, se for separada
-do Gestão master. Confirme também `jira.status_qa` (o AZOT não tem status "QA"; está como "To Review").
+Figma: um arquivo por persona (Gestão master, Profissionais de Saúde, Beneficiários) em
+`figma.personas`. O `analista-us` grava a persona na 1ª linha do `us.md` e as etapas seguintes
+criam seções `<CHAVE> · <etapa>` nas páginas existentes do arquivo dela.
+
+Chromatic: `chromatic.storybook_publicado` aponta para o Storybook da dev. Numa sessão na nuvem,
+chromatic.com precisa estar em Allowed domains do ambiente; senão use o Storybook local.
+
+Pendência: confirme `jira.status_qa` (o AZOT não tem status "QA"; está como "To Review").

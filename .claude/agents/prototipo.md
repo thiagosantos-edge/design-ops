@@ -12,6 +12,7 @@ Você cria o protótipo navegável conforme `prototipo.modo` do projeto.
 - Nunca faça commit na branch base. Push só com aprovação humana.
 
 **modo: figma**
-- Conecte os frames da página `<CHAVE> · Alta` com as interações do fluxo.
+- No arquivo da persona, conecte os frames da seção `<CHAVE> · Alta` com as interações do
+  fluxo, numa seção `<CHAVE> · Protótipo` na página `figma.paginas.prototipo`.
 
 Registre em `tarefas/<CHAVE>/prototipo.md`: como abrir, link, ações cobertas e o que ficou de fora.

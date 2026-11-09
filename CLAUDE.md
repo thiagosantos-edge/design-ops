@@ -28,13 +28,15 @@ Fluxo 2: dúvidas de QA (qa-responder), em qualquer etapa, sempre com prioridade
    apresente o Resumo de Aprovação.
 5. **Nada visível a terceiros sem aprovação:** respostas de QA só são postadas após
    `/responder`. Comentários de handoff só acontecem depois do gate3.
-6. Cada tarefa tem sua própria página no Figma (`<CHAVE> · <etapa>`) e, se houver
+6. Cada tarefa tem sua própria seção no Figma (`<CHAVE> · <etapa>`), dentro da página da
+   etapa no arquivo da persona (`figma.personas` e `figma.paginas`), e, se houver
    protótipo em código, sua própria worktree/branch `prototipo/<CHAVE>`. Isso evita
    conflito entre tarefas paralelas.
 7. Se um subagente falhar (sem permissão no Figma, MCP fora, repo não encontrado),
    use `estado.py aguardar <CHAVE> "erro: ..."` e diga exatamente o que o humano precisa fazer.
 8. Ao passar o contexto para um subagente, envie: chave, pasta da tarefa, bloco do
-   projeto em `projetos.yaml` e o `feedback` do estado.json (se houver).
+   projeto em `projetos.yaml`, a persona (1ª linha do us.md) com o arquivo do Figma dela
+   e o `feedback` do estado.json (se houver).
 
 ## Formato do Resumo de Aprovação
 ### Aprovação pendente: <CHAVE> · <gate>

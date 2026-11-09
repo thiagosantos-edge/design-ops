@@ -1,8 +1,6 @@
 # Um bloco por projeto. Preencha os links reais (ou mande para o Claude preencher).
 # caminho_local é relativo à pasta design-ops. Cada caminho_local também precisa
 # estar em .claude/settings.json > additionalDirectories.
-#
-# Valores marcados com PREENCHER ainda não foram encontrados no repositório nem no Jira.
 
 projetos:
   azo-web:
@@ -26,10 +24,40 @@ projetos:
       pasta_stories: "src/**/*.stories.@(ts|tsx)"   # maioria em src/stories/ (~100 arquivos, 520 entradas)
       pasta_componentes: "src/components"           # primitivos em src/components/ui
       helper_figma: "src/stories/figma.ts"          # gestaoMasterDesign(nodeId) liga a story ao frame do Figma
-    chromatic_url: "PREENCHER"         # o Storybook usa o addon @chromatic-com/storybook, mas não há appId nem workflow no repo
+    chromatic:
+      app_id: "6abe8eaf8816f214c93e915e"
+      biblioteca: "https://www.chromatic.com/library?appId=6abe8eaf8816f214c93e915e"
+      testes: "https://www.chromatic.com/library?appId=6abe8eaf8816f214c93e915e&view=tests"
+      storybook_publicado: "https://dev--6abe8eaf8816f214c93e915e.chromatic.com"   # padrão <branch>--<appId>
     figma:
-      arquivo_trabalho: "https://www.figma.com/design/6qEOF9vHotXUIcTMww83EE/Azo-Benef%C3%ADcios---Gest%C3%A3o-master"
-      biblioteca: "PREENCHER"          # arquivo do Design System, se for separado do Gestão master
+      # Um arquivo por persona. A persona da tarefa vem da linha "Persona:" do us.md.
+      # Os três têm a mesma estrutura de páginas; os agentes criam uma SEÇÃO
+      # "<CHAVE> · <etapa>" dentro da página da etapa (não criam páginas novas).
+      paginas:
+        fluxo: "✍ ・ Wireframes"
+        wireframe: "✍ ・ Wireframes"
+        alta: "↳ Design de Alta"
+        prototipo: "↳ Prototipo"
+        handoff: "↳ Handoff"
+        componentes: "🧩 ・ Componentes"
+      personas:
+        gestao:
+          nome: "Gestão master (empresa / plataforma)"
+          url: "https://www.figma.com/design/6qEOF9vHotXUIcTMww83EE/Azo-Benef%C3%ADcios---Gest%C3%A3o-master"
+          file_key: "6qEOF9vHotXUIcTMww83EE"
+          handoff_node: "4120:29870"
+          obs: "também tem a página \"◆ ・ UI Projeto 2\" com \"↳ Handoff \" (4194:4004)"
+        profissional:
+          nome: "Profissionais de Saúde"
+          url: "https://www.figma.com/design/7VDxmS4GB6B6rPDTHSRdyA/Azo-Benef%C3%ADcios---Profissionais-de-Sa%C3%BAde"
+          file_key: "7VDxmS4GB6B6rPDTHSRdyA"
+          handoff_node: "5709:12318"
+        beneficiario:
+          nome: "Beneficiários"
+          url: "https://www.figma.com/design/NMRjtcGxTbYgZPSyv8KJbB/Azo-Benef%C3%ADcios---Benefici%C3%A1rios"
+          file_key: "NMRjtcGxTbYgZPSyv8KJbB"
+          handoff_node: "6438:1312"
+          obs: "componentes também na página \"🧩 ・ Componentes · Padrão Azo\""
     jira:
       site: "https://edgebr.atlassian.net"
       cloud_id: "97f6dd8d-eaf8-4654-a786-9755c18ced2d"

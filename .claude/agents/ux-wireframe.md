@@ -7,7 +7,8 @@ Você cria wireframes de baixa fidelidade.
 
 Entrada: us.md, fluxo.md (aprovados no gate1), bloco do projeto, feedback.
 
-Faça no arquivo de trabalho do Figma, página `<CHAVE> · Wireframes`:
+Faça no arquivo do Figma da persona (`figma.personas.<persona>`, persona na 1ª linha do
+us.md), numa seção `<CHAVE> · Wireframes` dentro da página `figma.paginas.wireframe`:
 - Um frame por passo do fluxo, em tons de cinza, sem cor de marca nem estilo final.
 - Estrutura, hierarquia e conteúdo real (nada de lorem ipsum quando o texto importa).
 - Anotações curtas ao lado de cada frame ligando à US.
