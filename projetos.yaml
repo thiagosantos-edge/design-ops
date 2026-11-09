@@ -13,9 +13,9 @@ projetos:
         papel: "produto + storybook"   # app Vite + React (npm); Storybook 10 na raiz
       - url: "https://github.com/edgebr/AZO-Telemedicina-API.git"
         branch: "dev"
+        sparse: "/openapi.yaml"        # clona só este arquivo
         caminho_local: "../azo-telemedicina-api"
-        papel: "openapi"               # só o openapi.yaml (gera o cliente src/api/generated via orval)
-        sparse: "/openapi.yaml"
+        papel: "openapi"               # gera o cliente src/api/generated via orval
     storybook:
       instalar: "npm ci && npx orval --config ./orval.config.ts"   # na raiz do repositório web; precisa do .env
       env: "cp .env.example .env e OPENAPI_FILE_PATH=../azo-telemedicina-api/openapi.yaml"

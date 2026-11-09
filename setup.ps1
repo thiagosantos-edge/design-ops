@@ -36,8 +36,9 @@ if ($falhou) {
 Passo "Clonando os repositorios listados em projetos.yaml"
 $url = $null
 foreach ($linha in Get-Content projetos.yaml -Encoding UTF8) {
-    if ($linha -match '^\s*-\s*url:\s*"([^"]+)"') { $url = $Matches[1]; $branch = $null; continue }
+    if ($linha -match '^\s*-\s*url:\s*"([^"]+)"') { $url = $Matches[1]; $branch = $null; $sparse = $null; continue }
     if ($url -and $linha -match '^\s*branch:\s*"([^"]+)"') { $branch = $Matches[1]; continue }
+    if ($url -and $linha -match '^\s*sparse:\s*"([^"]+)"') { $sparse = $Matches[1]; continue }
     if ($url -and $linha -match '^\s*caminho_local:\s*"([^"]+)"') {
         $destino = Join-Path $PSScriptRoot $Matches[1]
         if ($url -match "ORG/REPO") {
@@ -46,11 +47,39 @@ foreach ($linha in Get-Content projetos.yaml -Encoding UTF8) {
             Ok "Ja existe: $destino"
         } else {
             New-Item -ItemType Directory -Force -Path (Split-Path $destino) | Out-Null
-            if ($branch) { git clone --branch $branch $url $destino } else { git clone $url $destino }
+            $args_clone = @("clone")
+            if ($branch) { $args_clone += @("--branch", $branch) }
+            if ($sparse) { $args_clone += @("--depth", "1", "--filter=blob:none", "--sparse") }
+            git @args_clone $url $destino
+            if ($LASTEXITCODE -eq 0 -and $sparse) { git -C $destino sparse-checkout set --no-cone $sparse }
             if ($LASTEXITCODE -eq 0) { Ok "Clonado: $destino" } else { Falta "Nao consegui clonar $url (confira acesso ao repo)" }
         }
         $url = $null
     }
+}
+
+Passo "Preparando o Storybook da AZO Web"
+$web = Join-Path $PSScriptRoot "..\azo-telemedicina-web"
+$openapi = Join-Path $PSScriptRoot "..\azo-telemedicina-api\openapi.yaml"
+if (-not (Test-Path $web)) {
+    Falta "Repositorio web nao encontrado em $web"
+} elseif (-not (Test-Path $openapi)) {
+    Falta "openapi.yaml nao encontrado em $openapi (precisa de leitura em edgebr/AZO-Telemedicina-API)"
+} else {
+    Push-Location $web
+    if (-not (Test-Path .env)) {
+        $caminhoApi = (Resolve-Path $openapi).Path -replace '\\', '/'
+        (Get-Content .env.example) -replace '^OPENAPI_FILE_PATH=.*', "OPENAPI_FILE_PATH=$caminhoApi" | Set-Content .env -Encoding UTF8
+        Ok ".env criado"
+    } else { Ok ".env ja existe" }
+    if (-not (Test-Path node_modules)) {
+        Write-Host "   Instalando dependencias (npm ci, pode levar alguns minutos)..."
+        npm ci --ignore-scripts --no-audit --no-fund | Out-Null
+        if ($LASTEXITCODE -eq 0) { Ok "npm ci" } else { Falta "npm ci falhou" }
+    } else { Ok "Dependencias ja instaladas" }
+    npx orval --config ./orval.config.ts | Out-Null
+    if ($LASTEXITCODE -eq 0) { Ok "Cliente da API gerado (src/api/generated)" } else { Falta "orval falhou" }
+    Pop-Location
 }
 
 Passo "Testando a maquina de estados"

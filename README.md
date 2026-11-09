@@ -7,25 +7,27 @@ humanos, até 3 tarefas em paralelo, painel visual e resposta rápida a dúvidas
 
 ```
 C:\Users\thago\Downloads\design\
-├── design-ops\     ← este repositório
-└── repos\          ← clones dos repositórios dos projetos (criados pelo setup)
+├── design-ops\             ← este repositório
+├── azo-telemedicina-web\   ← AZO Web, branch dev (criado pelo setup)
+└── azo-telemedicina-api\   ← só o openapi.yaml da API, branch dev (criado pelo setup)
 ```
 
 ## Instalação (uma vez)
 
 1. Instale Git for Windows, Python (marcando "Add python.exe to PATH") e Node.js LTS.
-2. Extraia o zip em `C:\Users\thago\Downloads\design`.
-3. Confira `projetos.yaml` e `.claude\settings.json` (links e caminhos dos repositórios).
-4. No PowerShell:
+2. No PowerShell:
    ```
-   cd $env:USERPROFILE\Downloads\design\design-ops
+   mkdir $env:USERPROFILE\Downloads\design; cd $env:USERPROFILE\Downloads\design
+   git clone -b claude/kind-keller-cw2z5x https://github.com/thiagosantos-edge/design-ops.git
+   cd design-ops
    powershell -ExecutionPolicy Bypass -File .\setup.ps1
    ```
-   O setup confere os programas, instala o Claude Code se faltar, clona os repositórios,
-   testa a máquina de estados e versiona a pasta. Se ele pedir para reabrir o
-   PowerShell, reabra e rode de novo.
-5. Dê dois cliques em `iniciar.bat`. Abre o painel no navegador e a sessão do Claude.
-6. Primeira sessão: confie na pasta, aprove os servidores MCP, rode `/mcp` e faça login
+   O setup confere os programas, instala o Claude Code se faltar, clona os repositórios
+   da AZO na dev, prepara o Storybook (.env, npm ci, cliente da API) e testa a máquina
+   de estados. Se ele pedir para reabrir o PowerShell, reabra e rode de novo.
+3. Dê dois cliques em `iniciar.bat`. Abre o painel (http://localhost:8787), o Storybook
+   (http://localhost:6006) e a sessão do Claude.
+4. Primeira sessão: confie na pasta, aprove os servidores MCP, rode `/mcp` e faça login
    no Figma e no Atlassian. Confira com `/agents` (9 agentes).
 
 ## Uso diário
