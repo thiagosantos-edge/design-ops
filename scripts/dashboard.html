@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fluxo de design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --fundo: #E9EDF1;
+  --superficie: #F7F9FB;
+  --tinta: #1D2733;
+  --tinta-suave: #5B6878;
+  --trilho: #B7C1CC;
+  --cobalto: #2B54C8;
+  --ocre: #A86A12;
+  --ocre-fundo: #F6E7CC;
+  --verde: #2F7A57;
+  --vermelho: #B3261E;
+  --raio: 6px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fundo: #171C23;
+    --superficie: #202733;
+    --tinta: #E6EBF1;
+    --tinta-suave: #9AA6B5;
+    --trilho: #3A4553;
+    --cobalto: #8FA8F2;
+    --ocre: #E0A443;
+    --ocre-fundo: #3A2E1A;
+    --verde: #5FBF8E;
+    --vermelho: #F2867E;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--fundo); color: var(--tinta);
+  font: 16px/1.5 "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+main { max-width: 1280px; margin: 0 auto; padding: 32px 24px 64px; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--cobalto); outline-offset: 2px; }
+
+/* Cabeçalho */
+.topo { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 32px; margin-bottom: 28px; }
+.topo h1 { font-size: 1.75rem; margin: 0; letter-spacing: -0.01em; }
+.numeros { display: flex; gap: 24px; color: var(--tinta-suave); }
+.numeros strong { color: var(--tinta); font-size: 1.25rem; margin-right: 4px; font-variant-numeric: tabular-nums; }
+.vivo { margin-left: auto; color: var(--tinta-suave); font-size: 0.875rem; }
+.vivo.erro { color: var(--vermelho); }
+
+/* Esperando você */
+.espera { background: var(--ocre-fundo); border-left: 6px solid var(--ocre); border-radius: var(--raio); padding: 20px 24px; margin-bottom: 36px; }
+.espera h2 { margin: 0 0 12px; font-size: 1.25rem; }
+.espera.vazia { background: var(--superficie); border-left-color: var(--verde); }
+.espera.vazia p { margin: 0; color: var(--tinta-suave); }
+.pendencia { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 16px; align-items: center; padding: 12px 0; border-top: 1px solid color-mix(in srgb, var(--ocre) 30%, transparent); }
+.pendencia:first-of-type { border-top: 0; }
+.pendencia .quem { font-weight: 700; }
+.pendencia .oque { color: var(--tinta-suave); grid-column: 1; }
+.acoes { grid-row: 1 / span 2; grid-column: 2; display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.copiar { border: 1px solid var(--tinta); background: transparent; border-radius: var(--raio); padding: 6px 12px; cursor: pointer; font-size: 0.875rem; }
+.copiar.principal { background: var(--tinta); color: var(--superficie); }
+.copiar:hover { border-color: var(--cobalto); }
+
+/* Linha de produção */
+.linha h2 { font-size: 1.25rem; margin: 0 0 12px; }
+.mapa { overflow-x: auto; background: var(--superficie); border-radius: var(--raio); padding: 8px 0 16px; }
+.grade { display: grid; grid-template-columns: 240px repeat(var(--n), minmax(72px, 1fr)); min-width: 1040px; }
+.cab { font-size: 0.8125rem; color: var(--tinta-suave); text-align: center; padding: 10px 4px; }
+.cab.gate { color: var(--ocre); font-weight: 700; }
+.fila { display: contents; cursor: pointer; }
+.fila > div { padding: 14px 0; border-top: 1px solid var(--fundo); }
+.fila:hover > div { background: color-mix(in srgb, var(--cobalto) 6%, transparent); }
+.tarefa { padding-left: 20px !important; padding-right: 12px !important; min-width: 0; }
+.tarefa .chave { font-weight: 700; }
+.tarefa .titulo { display: block; color: var(--tinta-suave); font-size: 0.875rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.estacao { position: relative; display: flex; align-items: center; justify-content: center; }
+.estacao::before, .estacao::after { content: ""; position: absolute; top: 50%; width: 50%; border-top: 3px dashed var(--trilho); }
+.estacao::before { left: 0; }
+.estacao::after { right: 0; }
+.estacao.ent::before, .estacao.sai::after { border-top-style: solid; border-color: var(--tinta-suave); }
+.estacao.primeira::before, .estacao.ultima::after { display: none; }
+.no { position: relative; z-index: 1; width: 14px; height: 14px; border-radius: 50%; background: var(--superficie); border: 3px solid var(--trilho); }
+.feita .no { background: var(--tinta-suave); border-color: var(--tinta-suave); }
+.gate .no { border-radius: 2px; transform: rotate(45deg); width: 13px; height: 13px; }
+.atual .no { width: 22px; height: 22px; border-width: 4px; background: var(--superficie); }
+.gate.atual .no { width: 20px; height: 20px; }
+.atual.s-rodando .no { border-color: var(--cobalto); }
+.atual.s-pronto .no { border-color: var(--cobalto); border-style: dotted; }
+.atual.s-aguardando_aprovacao .no, .atual.s-aguardando_humano .no { border-color: var(--ocre); background: var(--ocre); }
+.atual.s-em_qa .no { border-color: var(--verde); background: var(--verde); }
+.atual.s-rodando .no::after { content: ""; position: absolute; inset: -9px; border-radius: 50%; border: 2px solid var(--cobalto); animation: pulso 1.8s ease-out infinite; }
+@keyframes pulso { from { opacity: 0.8; transform: scale(0.6); } to { opacity: 0; transform: scale(1.3); } }
+@media (prefers-reduced-motion: reduce) { .atual.s-rodando .no::after { animation: none; opacity: 0.5; } }
+.duvida { position: absolute; z-index: 2; top: 4px; right: calc(50% - 26px); background: var(--vermelho); color: #fff; font-size: 0.75rem; font-weight: 700; border-radius: 9px; padding: 0 6px; line-height: 18px; }
+.legenda { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 12px; font-size: 0.8125rem; color: var(--tinta-suave); }
+.legenda span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; background: var(--c); }
+.legenda .fila-leg::before { background: transparent; border: 2px dotted var(--cobalto); width: 8px; height: 8px; }
+.sem-tarefas { padding: 32px 20px; color: var(--tinta-suave); }
+.sem-tarefas code { color: var(--tinta); }
+
+/* Gaveta de detalhes */
+.gaveta { position: fixed; inset: 0 0 0 auto; width: min(560px, 100%); background: var(--superficie); box-shadow: -12px 0 32px rgba(15, 25, 40, 0.18); padding: 28px; overflow-y: auto; transform: translateX(100%); visibility: hidden; transition: transform 0.2s ease, visibility 0.2s; z-index: 2; }
+.gaveta.aberta { transform: none; visibility: visible; }
+@media (prefers-reduced-motion: reduce) { .gaveta { transition: none; } }
+.gaveta h2 { margin: 0 40px 4px 0; font-size: 1.5rem; }
+.gaveta .sub { color: var(--tinta-suave); margin: 0 0 20px; }
+.fechar { position: absolute; top: 20px; right: 20px; border: 0; background: transparent; font-size: 1.5rem; cursor: pointer; line-height: 1; padding: 4px 8px; }
+.gaveta h3 { font-size: 1rem; margin: 24px 0 8px; }
+.feedback { background: var(--ocre-fundo); border-radius: var(--raio); padding: 10px 14px; }
+.arquivos { display: flex; flex-wrap: wrap; gap: 8px; }
+.arquivos button { border: 1px solid var(--trilho); background: transparent; border-radius: var(--raio); padding: 4px 10px; cursor: pointer; font-size: 0.875rem; }
+.arquivos button[aria-pressed="true"] { border-color: var(--cobalto); color: var(--cobalto); }
+pre.conteudo { white-space: pre-wrap; background: var(--fundo); border-radius: var(--raio); padding: 14px; font-size: 0.8125rem; max-height: 40vh; overflow: auto; }
+ol.historico { list-style: none; padding: 0; margin: 0; border-left: 2px solid var(--trilho); }
+ol.historico li { padding: 0 0 12px 16px; position: relative; }
+ol.historico li::before { content: ""; position: absolute; left: -6px; top: 7px; width: 10px; height: 10px; border-radius: 50%; background: var(--tinta-suave); }
+ol.historico time { display: block; font-size: 0.8125rem; color: var(--tinta-suave); }
+.aviso { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--tinta); color: var(--superficie); padding: 8px 16px; border-radius: var(--raio); opacity: 0; pointer-events: none; transition: opacity 0.15s; }
+.aviso.visivel { opacity: 1; }
+
+@media (max-width: 640px) {
+  main { padding: 20px 14px 48px; }
+  .pendencia { grid-template-columns: 1fr; }
+  .acoes { grid-row: auto; grid-column: 1; justify-content: flex-start; }
+  .vivo { margin-left: 0; }
+}
+</style>
+</head>
+<body>
+<main>
+  <header class="topo">
+    <h1>Fluxo de design</h1>
+    <div class="numeros" id="numeros"></div>
+    <span class="vivo" id="vivo" aria-live="polite">Carregando…</span>
+  </header>
+
+  <section class="espera" id="espera" aria-labelledby="espera-titulo"></section>
+
+  <section class="linha" aria-labelledby="linha-titulo">
+    <h2 id="linha-titulo">Onde cada tarefa está</h2>
+    <div class="mapa" id="mapa"></div>
+    <div class="legenda">
+      <span style="--c: var(--cobalto)">Agente trabalhando</span>
+      <span class="fila-leg">Na fila para o agente</span>
+      <span style="--c: var(--ocre)">Esperando você</span>
+      <span style="--c: var(--verde)">Com o QA</span>
+      <span style="--c: var(--vermelho)">Dúvida do QA aberta</span>
+    </div>
+  </section>
+</main>
+
+<aside class="gaveta" id="gaveta" aria-hidden="true" aria-labelledby="g-titulo">
+  <button class="fechar" id="fechar" aria-label="Fechar detalhes">×</button>
+  <div id="g-corpo"></div>
+</aside>
+<div class="aviso" id="aviso" role="status"></div>
+
+<script>
+const STATUS = {
+  pronto: "Na fila para o agente",
+  rodando: "Agente trabalhando",
+  aguardando_aprovacao: "Esperando sua aprovação",
+  aguardando_humano: "Esperando uma ação sua",
+  em_qa: "Com o QA",
+};
+let dados = null, aberta = null, arquivoAberto = null, ultimaGaveta = "";
+
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const etapaDe = (t) => dados.etapas.find((e) => e.id === t.etapa);
+const duvidasAbertas = (t) => t.duvidas.filter((d) => d.status === "aberta");
+
+function quando(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  return d.toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+}
+
+function botaoCopiar(texto, rotulo, principal) {
+  return `<button class="copiar${principal ? " principal" : ""}" data-copiar="${esc(texto)}">${esc(rotulo)}</button>`;
+}
+
+function renderNumeros() {
+  const ts = dados.tarefas;
+  const rod = ts.filter((t) => t.status === "rodando").length;
+  const voce = ts.filter((t) => t.status.startsWith("aguardando")).length + ts.filter((t) => duvidasAbertas(t).length).length;
+  const qa = ts.filter((t) => t.status === "em_qa").length;
+  document.getElementById("numeros").innerHTML =
+    `<span><strong>${rod}/${dados.limite}</strong>agentes ativos</span>` +
+    `<span><strong>${voce}</strong>esperando você</span>` +
+    `<span><strong>${qa}</strong>com o QA</span>`;
+}
+
+function renderEspera() {
+  const el = document.getElementById("espera");
+  const itens = [];
+  for (const t of dados.tarefas) {
+    for (const d of duvidasAbertas(t)) {
+      itens.push(`<div class="pendencia"><span class="quem">${esc(t.chave)}: dúvida do QA #${d.id}</span>
+        <span class="oque">${esc(d.texto)}</span>
+        <div class="acoes">${botaoCopiar("/qa", "Copiar /qa", true)}</div></div>`);
+    }
+    if (t.status === "aguardando_aprovacao") {
+      itens.push(`<div class="pendencia"><span class="quem">${esc(t.chave)}: ${esc(etapaDe(t).nome)}</span>
+        <span class="oque">${esc(t.titulo)}. Leia o resumo e o red team no Claude antes de decidir.</span>
+        <div class="acoes">${botaoCopiar("/aprovar " + t.chave, "Copiar /aprovar", true)}${botaoCopiar("/reprovar " + t.chave + " ", "Copiar /reprovar")}</div></div>`);
+    }
+    if (t.status === "aguardando_humano") {
+      const cmd = "python scripts\\estado.py retomar " + t.chave;
+      itens.push(`<div class="pendencia"><span class="quem">${esc(t.chave)}: ${esc(etapaDe(t).nome)}</span>
+        <span class="oque">${esc(t.motivo || "Ação manual pendente")}</span>
+        <div class="acoes">${botaoCopiar(cmd, "Copiar comando para retomar", true)}</div></div>`);
+    }
+  }
+  if (!itens.length) {
+    el.className = "espera vazia";
+    el.innerHTML = `<h2 id="espera-titulo">Nada esperando você</h2><p>${dados.tarefas.length ? "Os agentes seguem trabalhando. Esta área avisa quando algo depender de você." : "Crie a primeira tarefa no Claude com /nova CHAVE projeto Título."}</p>`;
+  } else {
+    el.className = "espera";
+    el.innerHTML = `<h2 id="espera-titulo">Esperando você (${itens.length})</h2>` + itens.join("");
+  }
+}
+
+function renderMapa() {
+  const el = document.getElementById("mapa");
+  const etapas = dados.etapas;
+  if (!dados.tarefas.length) {
+    el.innerHTML = `<p class="sem-tarefas">Nenhuma tarefa ainda. No Claude, rode <code>/nova CHAVE projeto Título</code> e cole as notas da reunião.</p>`;
+    return;
+  }
+  const ordem = { aguardando_aprovacao: 0, aguardando_humano: 1, rodando: 2, pronto: 3, em_qa: 4 };
+  const ts = [...dados.tarefas].sort((a, b) => (duvidasAbertas(b).length - duvidasAbertas(a).length) || ((ordem[a.status] ?? 9) - (ordem[b.status] ?? 9)));
+  let html = `<div class="grade" style="--n:${etapas.length}"><div class="cab"></div>`;
+  html += etapas.map((e) => `<div class="cab${e.gate ? " gate" : ""}" title="${esc(e.nome)}">${esc(e.curto)}</div>`).join("");
+  for (const t of ts) {
+    const idx = etapas.findIndex((e) => e.id === t.etapa);
+    const nDuv = duvidasAbertas(t).length;
+    html += `<div class="fila" role="button" tabindex="0" data-chave="${esc(t.chave)}" aria-label="${esc(t.chave)}, ${esc(STATUS[t.status] || t.status)}, etapa ${esc(etapas[idx].nome)}">`;
+    html += `<div class="tarefa"><span class="chave">${esc(t.chave)}</span> <span class="titulo">${esc(t.titulo || t.projeto)}</span></div>`;
+    etapas.forEach((e, i) => {
+      const cls = ["estacao", e.gate ? "gate" : "", i < idx ? "feita sai" : "", i <= idx ? "ent" : "", i === 0 ? "primeira" : "", i === etapas.length - 1 ? "ultima" : "", i === idx ? "atual s-" + t.status : ""].join(" ");
+      const badge = i === idx && nDuv ? `<span class="duvida" title="Dúvidas do QA abertas">${nDuv}</span>` : "";
+      html += `<div class="${cls}"><span class="no"></span>${badge}</div>`;
+    });
+    html += `</div>`;
+  }
+  el.innerHTML = html + `</div>`;
+}
+
+function renderGaveta() {
+  const g = document.getElementById("gaveta");
+  const t = dados && dados.tarefas.find((x) => x.chave === aberta);
+  if (!t) { g.classList.remove("aberta"); g.setAttribute("aria-hidden", "true"); return; }
+  const arqs = t.artefatos.length
+    ? `<div class="arquivos">${t.artefatos.map((a) => `<button data-arquivo="${esc(a)}" aria-pressed="${a === arquivoAberto}">${esc(a)}</button>`).join("")}</div><pre class="conteudo" id="conteudo"${arquivoAberto ? "" : " hidden"}></pre>`
+    : `<p class="sub">Os agentes ainda não produziram arquivos para esta tarefa.</p>`;
+  const hist = [...t.historico].reverse().map((h) => `<li><time>${quando(h.quando)}</time>${esc(h.evento)}</li>`).join("");
+  const duvs = t.duvidas.map((d) => `<li><time>#${d.id}, ${d.status === "aberta" ? "aberta" : "respondida"}</time>${esc(d.texto)}</li>`).join("");
+  document.getElementById("g-corpo").innerHTML = `
+    <h2 id="g-titulo">${esc(t.chave)}</h2>
+    <p class="sub">${esc(t.titulo)}<br>${esc(t.projeto)}. ${esc(etapaDe(t).nome)}: ${esc(STATUS[t.status] || t.status)}</p>
+    <p><strong>Próximo passo:</strong> ${esc(t.proximo)}</p>
+    ${t.feedback ? `<h3>Feedback da última reprovação</h3><p class="feedback">${esc(t.feedback)}</p>` : ""}
+    <h3>Arquivos produzidos</h3>${arqs}
+    ${duvs ? `<h3>Dúvidas do QA</h3><ol class="historico">${duvs}</ol>` : ""}
+    <h3>Histórico</h3><ol class="historico">${hist}</ol>`;
+  g.classList.add("aberta");
+  g.setAttribute("aria-hidden", "false");
+  if (arquivoAberto) carregarArquivo(t.chave, arquivoAberto);
+}
+
+async function carregarArquivo(chave, arq) {
+  const r = await fetch(`/api/arquivo?k=${encodeURIComponent(chave)}&f=${encodeURIComponent(arq)}`);
+  const pre = document.getElementById("conteudo");
+  if (!pre) return;
+  pre.hidden = false;
+  pre.textContent = r.ok ? await r.text() : "Não foi possível abrir este arquivo.";
+}
+
+async function atualizar() {
+  const vivo = document.getElementById("vivo");
+  try {
+    const r = await fetch("/api/estado", { cache: "no-store" });
+    dados = await r.json();
+    renderNumeros(); renderEspera(); renderMapa();
+    if (aberta) {
+      const atual = JSON.stringify(dados.tarefas.find((x) => x.chave === aberta) || null);
+      if (atual !== ultimaGaveta) { ultimaGaveta = atual; renderGaveta(); }
+    }
+    vivo.className = "vivo";
+    vivo.textContent = "Atualizado às " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  } catch (e) {
+    vivo.className = "vivo erro";
+    vivo.textContent = "Sem conexão com o painel. Confira se o dashboard.py está rodando.";
+  }
+}
+
+function avisar(msg) {
+  const a = document.getElementById("aviso");
+  a.textContent = msg; a.classList.add("visivel");
+  clearTimeout(avisar.t); avisar.t = setTimeout(() => a.classList.remove("visivel"), 1800);
+}
+
+document.addEventListener("click", async (ev) => {
+  const c = ev.target.closest("[data-copiar]");
+  if (c) {
+    try { await navigator.clipboard.writeText(c.dataset.copiar); avisar("Copiado. Cole no Claude."); }
+    catch { avisar(c.dataset.copiar); }
+    return;
+  }
+  const a = ev.target.closest("[data-arquivo]");
+  if (a) { arquivoAberto = a.dataset.arquivo; renderGaveta(); return; }
+  const f = ev.target.closest(".fila");
+  if (f) { aberta = f.dataset.chave; arquivoAberto = null; ultimaGaveta = ""; renderGaveta(); }
+});
+document.addEventListener("keydown", (ev) => {
+  const f = ev.target.closest && ev.target.closest(".fila");
+  if (f && (ev.key === "Enter" || ev.key === " ")) { ev.preventDefault(); aberta = f.dataset.chave; arquivoAberto = null; renderGaveta(); }
+  if (ev.key === "Escape") { aberta = null; renderGaveta(); }
+});
+document.getElementById("fechar").addEventListener("click", () => { aberta = null; renderGaveta(); });
+
+atualizar();
+setInterval(atualizar, 3000);
+</script>
+</body>
+</html>

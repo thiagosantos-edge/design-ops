@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "additionalDirectories": ["../repos/REPO"],
+    "allow": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash(python scripts/estado.py *)",
+      "Bash(git worktree *)",
+      "Bash(git status)",
+      "Bash(git diff *)"
+    ],
+    "ask": [
+      "Bash(git push *)",
+      "Bash(git commit *)"
+    ],
+    "deny": [
+      "Edit(./tarefas/**/estado.json)",
+      "Bash(git push * main)",
+      "Bash(rm -rf *)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      { "hooks": [ { "type": "command", "command": "python scripts/estado.py painel" } ] }
+    ]
+  }
+}
